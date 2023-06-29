@@ -8,11 +8,7 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create({ username, email, forename, surname }: CreateUserDto) {
-    const existingUser = await this.prisma.user.count({
-      where: {
-        username,
-      },
-    });
+    const existingUser = await this.findByUsername(username);
     if (existingUser) {
       return Promise.reject(
         new HttpException('Username already taken.', HttpStatus.BAD_REQUEST)
@@ -25,6 +21,14 @@ export class UsersService {
         email,
         forename,
         surname,
+      },
+    });
+  }
+
+  findByUsername(username: string) {
+    return this.prisma.user.findUnique({
+      where: {
+        username,
       },
     });
   }
