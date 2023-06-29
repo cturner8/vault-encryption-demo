@@ -5,10 +5,6 @@ name: "encryption-demo"
 services:
   app:
     image: mcr.microsoft.com/devcontainers/typescript-node:1-20
-    environment:
-      DATABASE_URL: "file:/home/node/db/dev.db"
-    volumes:
-      - db:/home/node/db
     networks:
       - demo
 
