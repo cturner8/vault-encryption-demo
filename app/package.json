@@ -9,6 +9,8 @@
     "compile": "tsc --noEmit",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\"",
+    "prisma": "yarn prisma",
+    "studio": "yarn prisma studio",
     "dev": "yarn start:dev",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -27,6 +29,8 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^10.0.0",
     "@prisma/client": "4.16.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
   },

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../services/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -7,8 +7,26 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  create(_createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create({ username, email, forename, surname }: CreateUserDto) {
+    const existingUser = await this.prisma.user.count({
+      where: {
+        username,
+      },
+    });
+    if (existingUser) {
+      return Promise.reject(
+        new HttpException('Username already taken.', HttpStatus.BAD_REQUEST)
+      );
+    }
+
+    return this.prisma.user.create({
+      data: {
+        username,
+        email,
+        forename,
+        surname,
+      },
+    });
   }
 
   findAll() {
