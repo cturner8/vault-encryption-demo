@@ -1,0 +1,7 @@
+version: "3.9"
+
+name: "encryption-demo"
+
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/typescript-node:1-20
