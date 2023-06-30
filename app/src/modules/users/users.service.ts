@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 import { PrismaService } from '@services/prisma.service';
@@ -72,19 +76,91 @@ export class UsersService {
     return bcrypt.compare(inputPassword, userHash);
   }
 
-  findAll() {
-    return this.prisma.user.findMany();
+  findAll(page = 0, size = 10, term: string) {
+    return this.prisma.user.findMany({
+      take: size,
+      skip: page * size,
+      where: term
+        ? {
+            OR: [
+              {
+                email: {
+                  contains: term,
+                },
+              },
+              {
+                username: {
+                  contains: term,
+                },
+              },
+              {
+                forename: {
+                  contains: term,
+                },
+              },
+              {
+                surname: {
+                  contains: term,
+                },
+              },
+            ],
+          }
+        : {},
+      orderBy: [
+        {
+          username: 'asc',
+        },
+        {
+          forename: 'asc',
+        },
+        {
+          surname: 'asc',
+        },
+      ],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!user) return Promise.reject(new NotFoundException());
+    return user;
   }
 
-  update(id: number, _updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  update(id: number, { email, forename, surname, username }: UpdateUserDto) {
+    return this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        email,
+        forename,
+        surname,
+        username,
+      },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    await this.prisma.$transaction([
+      this.prisma.userSalt.delete({
+        where: {
+          userId: id,
+        },
+      }),
+      this.prisma.userHash.delete({
+        where: {
+          userId: id,
+        },
+      }),
+      this.prisma.user.delete({
+        where: {
+          id,
+        },
+      }),
+    ]);
   }
 }

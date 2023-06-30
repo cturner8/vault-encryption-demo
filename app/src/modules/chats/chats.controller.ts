@@ -1,11 +1,12 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
 } from '@nestjs/common';
 
 import { ChatsService } from './chats.service';
@@ -27,17 +28,20 @@ export class ChatsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.chatsService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.chatsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
-    return this.chatsService.update(+id, updateChatDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateChatDto: UpdateChatDto
+  ) {
+    return this.chatsService.update(id, updateChatDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.chatsService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.chatsService.remove(id);
   }
 }

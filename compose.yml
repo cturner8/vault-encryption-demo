@@ -5,6 +5,8 @@ name: "encryption-demo"
 services:
   app:
     image: mcr.microsoft.com/devcontainers/typescript-node:1-20
+    ports:
+      - 7777:7777
     networks:
       - demo
 

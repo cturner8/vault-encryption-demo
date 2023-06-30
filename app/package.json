@@ -10,6 +10,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\"",
     "studio": "yarn prisma studio",
+    "generate": "yarn prisma generate",
     "dev": "yarn start:dev",
     "start": "nest start",
     "start:dev": "nest start --watch",
