@@ -24,7 +24,10 @@
     "noUnusedParameters": true,
     "strictPropertyInitialization": false,
     "paths": {
-      "@src/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@modules/*": ["src/modules/*"],
+      "@services/*": ["src/services/*"],
+      "@config*": ["src/config"]
     }
   }
 }
