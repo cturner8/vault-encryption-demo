@@ -1,4 +1,5 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../services/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -7,13 +8,20 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async create({ username, email, forename, surname }: CreateUserDto) {
+  async create({
+    username,
+    email,
+    forename,
+    surname,
+    password,
+  }: CreateUserDto) {
     const existingUser = await this.findByUsername(username);
     if (existingUser) {
-      return Promise.reject(
-        new HttpException('Username already taken.', HttpStatus.BAD_REQUEST)
-      );
+      return Promise.reject(new BadRequestException('Username already taken.'));
     }
+
+    const salt = await bcrypt.genSalt();
+    const hash = await bcrypt.hash(password, salt);
 
     return this.prisma.user.create({
       data: {
@@ -21,6 +29,16 @@ export class UsersService {
         email,
         forename,
         surname,
+        userHash: {
+          create: {
+            hash,
+          },
+        },
+        userSalt: {
+          create: {
+            salt,
+          },
+        },
       },
     });
   }
@@ -30,7 +48,14 @@ export class UsersService {
       where: {
         username,
       },
+      include: {
+        userHash: true,
+      },
     });
+  }
+
+  async compareUserHash(userHash: string, inputPassword: string) {
+    return bcrypt.compare(inputPassword, userHash);
   }
 
   findAll() {

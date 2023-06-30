@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { SignInDto } from './dto/signin-dto';
@@ -11,28 +15,34 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async signIn({ username }: SignInDto) {
+  async signIn({ username, password }: SignInDto) {
     const user = await this.usersService.findByUsername(username);
-    if (!user) {
+    if (!user || !user.userHash) {
       return Promise.reject(new UnauthorizedException());
     }
-    // if (user?.password !== pass) {
-    //   throw new UnauthorizedException();
-    // }
-    // const { password, ...result } = user;
 
-    // TODO: Generate a JWT and return it here
-    // instead of the user object
+    const { hash } = user.userHash;
+    const passwordMatch = await this.usersService.compareUserHash(
+      hash,
+      password
+    );
+
+    if (!passwordMatch) {
+      throw new UnauthorizedException();
+    }
 
     const { id: sub, email, forename, surname } = user;
-
     const payload = { sub, username, email, forename, surname };
-    return {
+
+    return Promise.resolve({
       access_token: await this.jwtService.signAsync(payload),
-    };
+    });
   }
 
-  async signUp(dto: SignUpDto) {
-    return this.usersService.create(dto);
+  async signUp({ password, confirmPassword, ...dto }: SignUpDto) {
+    if (password !== confirmPassword) {
+      return Promise.reject(new BadRequestException('Passwords do not match.'));
+    }
+    return this.usersService.create({ password, ...dto });
   }
 }
