@@ -32,6 +32,7 @@ export class AuthController {
     return this.authService.signUp(signUpDto);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
