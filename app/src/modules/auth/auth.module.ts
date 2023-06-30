@@ -15,7 +15,11 @@ import { AuthService } from './auth.service';
       useFactory: async (configService: ConfigService) => ({
         global: true,
         secret: configService.get<string>('jwtSecret') ?? '',
-        signOptions: { expiresIn: '60s' },
+        signOptions: {
+          expiresIn: configService.get<string>('jwtExpiry'),
+          issuer: configService.get<string>('jwtIssuer'),
+          audience: configService.get<string>('jwtAudience'),
+        },
       }),
       inject: [ConfigService],
     }),
