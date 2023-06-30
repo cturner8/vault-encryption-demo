@@ -17,7 +17,7 @@ export class AuthService {
   ) {}
 
   async signIn({ username, password }: SignInDto) {
-    const user = await this.usersService.findByUsername(username);
+    const user = await this.usersService.findHashByUsername(username);
     if (!user || !user.userHash) {
       return Promise.reject(new UnauthorizedException());
     }

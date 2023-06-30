@@ -21,8 +21,7 @@ export class UsersService {
       return Promise.reject(new BadRequestException('Username already taken.'));
     }
 
-    const salt = await bcrypt.genSalt();
-    const hash = await bcrypt.hash(password, salt);
+    const { salt, hash } = await this.generateHash(password);
 
     return this.prisma.user.create({
       data: {
@@ -49,10 +48,24 @@ export class UsersService {
       where: {
         username,
       },
+    });
+  }
+
+  findHashByUsername(username: string) {
+    return this.prisma.user.findUnique({
+      where: {
+        username,
+      },
       include: {
         userHash: true,
       },
     });
+  }
+
+  private async generateHash(password: string) {
+    const salt = await bcrypt.genSalt();
+    const hash = await bcrypt.hash(password, salt);
+    return { salt, hash };
   }
 
   async compareUserHash(userHash: string, inputPassword: string) {
