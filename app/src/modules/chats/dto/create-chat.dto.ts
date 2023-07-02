@@ -1,1 +1,9 @@
-export class CreateChatDto {}
+import { ArrayNotEmpty, IsNotEmpty } from 'class-validator';
+
+export class CreateChatDto {
+  @IsNotEmpty()
+  name: string;
+
+  @ArrayNotEmpty()
+  members: number[];
+}
