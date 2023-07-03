@@ -33,6 +33,9 @@ resource "vault_transit_secret_backend_key" "app_key" {
 
 resource "vault_token" "app_token" {
   policies = ["app"]
+
+  renewable = true
+  ttl       = "24h"
 }
 
 output "app_client_token" {
