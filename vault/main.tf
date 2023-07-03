@@ -37,7 +37,7 @@ resource "vault_token" "app_token" {
   policies = ["app"]
 }
 
-output "app_token" {
+output "app_client_token" {
   value     = vault_token.app_token.client_token
   sensitive = true
 }

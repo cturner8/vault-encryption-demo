@@ -9,3 +9,7 @@ path "transit/rewrap/app_key" {
 path "transit/encrypt/app_key" {
   capabilities = ["update"]
 }
+
+path "transit/decrypt/app_key" {
+  capabilities = ["update"]
+}

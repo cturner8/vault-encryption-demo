@@ -1,2 +1,3 @@
 import authConfig from './authConfig';
-export const configuration = [authConfig];
+import vaultConfig from './vaultConfig';
+export const configuration = [authConfig, vaultConfig];
