@@ -1,6 +1,8 @@
-db/**
+db/prisma/*.db
 
 vault/.terraform
 vault/terraform.tfstate
 vault/terraform.tfstate.backup
 vault/tfplan
+
+node_modules

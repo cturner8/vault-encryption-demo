@@ -1,0 +1,16 @@
+{
+  "name": "@demo/db",
+  "version": "1.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prisma": "^4.16.2"
+  },
+  "dependencies": {
+    "@prisma/client": "4.16.2"
+  },
+  "scripts": {
+    "studio": "yarn prisma studio",
+    "generate": "yarn prisma generate"
+  }
+}
