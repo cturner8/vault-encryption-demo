@@ -1,1 +1,6 @@
 db/**
+
+vault/.terraform
+vault/terraform.tfstate
+vault/terraform.tfstate.backup
+vault/tfplan
