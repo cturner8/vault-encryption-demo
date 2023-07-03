@@ -46,6 +46,7 @@ model Chat {
   ownerId   Int
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+  encrypted Boolean       @default(false)
   members   ChatMember[]
   messages  ChatMessage[]
 }

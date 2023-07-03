@@ -5,12 +5,16 @@ import {
 } from '@nestjs/common';
 
 import { PrismaService } from '@/services/prisma.service';
+import { VaultService } from '@/services/vault.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 
 @Injectable()
 export class MessagesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly vault: VaultService
+  ) {}
 
   private async findChat(chatId: number, userId: number) {
     const chat = await this.prisma.chat.findFirst({
@@ -27,8 +31,13 @@ export class MessagesService {
     return chat;
   }
 
-  async create(chatId: number, userId: number, { message }: CreateMessageDto) {
-    await this.findChat(chatId, userId);
+  async create(chatId: number, userId: number, dto: CreateMessageDto) {
+    const { encrypted } = await this.findChat(chatId, userId);
+    if (encrypted) {
+      dto.message = await this.vault.encrypt(dto.message);
+    }
+    const { message } = dto;
+
     return this.prisma.chatMessage.create({
       data: {
         message,
@@ -38,8 +47,15 @@ export class MessagesService {
     });
   }
 
-  findAll(chatId: number, userId: number, page = 0, size = 10, term: string) {
-    return this.prisma.chatMessage.findMany({
+  async findAll(
+    chatId: number,
+    userId: number,
+    page = 0,
+    size = 10,
+    term: string
+  ) {
+    const chat = await this.findChat(chatId, userId);
+    const results = await this.prisma.chatMessage.findMany({
       take: size,
       skip: page * size,
       where: term
@@ -68,17 +84,29 @@ export class MessagesService {
         createdAt: 'desc',
       },
     });
+    return Promise.all(
+      results.map(async (result) => {
+        if (chat.encrypted) {
+          result.message = await this.vault.decrypt(result.message);
+        }
+        return Promise.resolve(result);
+      })
+    );
   }
 
   async findOne(chatId: number, userId: number, id: number) {
-    await this.findChat(chatId, userId);
-    const message = await this.prisma.chatMessage.findUnique({
+    const { encrypted } = await this.findChat(chatId, userId);
+    const messageRecord = await this.prisma.chatMessage.findUnique({
       where: {
         id,
       },
     });
-    if (!message) return Promise.reject(new NotFoundException());
-    return message;
+    if (!messageRecord) return Promise.reject(new NotFoundException());
+    if (encrypted) {
+      messageRecord.message = await this.vault.decrypt(messageRecord.message);
+    }
+
+    return messageRecord;
   }
 
   async update(

@@ -22,10 +22,8 @@ resource "vault_policy" "app" {
 }
 
 resource "vault_mount" "transit" {
-  path                      = "transit"
-  type                      = "transit"
-  default_lease_ttl_seconds = 3600
-  max_lease_ttl_seconds     = 86400
+  path = "transit"
+  type = "transit"
 }
 
 resource "vault_transit_secret_backend_key" "app_key" {

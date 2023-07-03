@@ -1,4 +1,4 @@
-import { ArrayNotEmpty, IsNotEmpty } from 'class-validator';
+import { ArrayNotEmpty, IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class CreateChatDto {
   @IsNotEmpty()
@@ -6,4 +6,7 @@ export class CreateChatDto {
 
   @ArrayNotEmpty()
   members: number[];
+
+  @IsBoolean()
+  encrypted: boolean;
 }
