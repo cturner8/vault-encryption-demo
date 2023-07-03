@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id              Int           @id @default(autoincrement())
+  username        String        @unique
+  email           String
+  forename        String
+  surname         String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  userHash        UserHash?
+  userSalt        UserSalt?
+  chats           Chat[]
+  chatMemberships ChatMember[]
+  chatMessages    ChatMessage[]
+}
+
+model UserHash {
+  id     Int    @id @default(autoincrement())
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int    @unique
+  hash   String
+}
+
+model UserSalt {
+  id     Int    @id @default(autoincrement())
+  user   User   @relation(fields: [userId], references: [id])
+  userId Int    @unique
+  salt   String
+}
+
+model Chat {
+  id        Int           @id @default(autoincrement())
+  name      String
+  owner     User          @relation(fields: [ownerId], references: [id])
+  ownerId   Int
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  encrypted Boolean       @default(false)
+  members   ChatMember[]
+  messages  ChatMessage[]
+}
+
+model ChatMember {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+  chat   Chat @relation(fields: [chatId], references: [id])
+  chatId Int
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    Int
+  sender    User     @relation(fields: [senderId], references: [id])
+  senderId  Int
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

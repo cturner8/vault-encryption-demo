@@ -17,7 +17,9 @@
   "features": {
     "ghcr.io/devcontainers-contrib/features/npm-package:1": {
       "package": "@nestjs/cli"
-    }
+    },
+    "ghcr.io/warrenbuckley/codespace-features/sqlite:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {}
   },
 
   // Features to add to the dev container. More info: https://containers.dev/features.
@@ -39,13 +41,14 @@
   // "customizations": {},
 
   // Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
-"remoteUser": "node",
-"customizations": {
-	"vscode": {
-		"extensions": [
-			"esbenp.prettier-vscode",
-			"ms-azuretools.vscode-docker"
-		]
-	}
-}
+  "remoteUser": "node",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        "Prisma.prisma"
+      ]
+    }
+  }
 }
